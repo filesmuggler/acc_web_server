@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <title>ACC Control Panel</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js">
+    </script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script src="{% static "lib/plotly.min.js" %}"></script>
+    <script src="{% static "lib/global.js" %}"></script>
+    <script src="{% static "ros_check/jquery/jquery-3.4.1.js" %}"></script>
+    <script src="{% static "ros_check/jquery/jquery-terminal-2.8.0.js" %}"></script>
+    <script src="{% static "ros_check/js/ros-start.js" %}"></script>
+    <script src="{% static "ros_check/js/ros-publish.js" %}"></script>
+    <script src="{% static "ros_check/js/ajax.js" %}"></script>
+    <script src="{% static "ros_check/js/start.js" %}"></script>
+    <script src="{% static "ros_check/js/functions.js" %}"></script>
+    <script src="{% static "ros_check/js/manual-car.js" %}"></script>
+    <script src="{% static "ros_check/js/ros-imu-plot.js" %}"></script>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/ecb88ac144.js"></script>
+</head>
+
+<body>
+
+    <div class="jumbotron text-center" id="acc-header" style="margin-bottom:0">
+        <h1>Autonomous Cars Cooperation Project</h1>
+        <p>Fleet behaviour research lab</p>
+    </div>
+    <!-- add navbar -->
+    <div class="container-fluid">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home-div">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#fleet-control-div">Fleet control</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#individual-control-div">Individual control</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#track-planning-div">Track planning</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href='#data-graph-div'>IMU RT graph</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#howto-div">How to</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#documentation-div">Documentation</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#credits-div">Credits</a>
+            </li>
+
+        </ul>
+        <div class="tab-content">
+            <div class="acc-panel tab-pane container-fluid active" id="home-div">
+                <div class="container-fluid">
+                    <div class="row content">
+                        <div class="col-sm-3 sidenav">
+                            <h4>Control Panel</h4>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="active"><a class="nav-link active" data-toggle="tab"
+                                        href="#home-section1">Dashboard</a></li>
+                            </ul>
+                            <br>
+                        </div>
+                        <div class="col-sm-9 acc-main-content">
+                            <div class="tab-content">
+                                <div class="tab-pane container-fluid active" id="home-section1">
+                                    <h4>Fleet dashboard</h4>
+                                    <br>
+                                    <h5>Docker status
+                                        <i class="far fa-check-circle acc-ok-message acc-status-icon"
+                                            id="docker-status-ok-icon"></i>
+                                        <i class="far fa-times-circle acc-alert-message acc-status-icon"
+                                            id="docker-status-alert-icon"></i>
+                                        <i class="fas fa-question-circle acc-unknown-message acc-status-icon"
+                                            id="docker-status-unknown-icon"></i>
+                                    </h5>
+                                    <p>
+                                        <div class="container">
+                                            <div class="row content">
+                                                <div class="col-sm-5">
+                                                    Enter your user session password to start docker container:
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input name="password" type="password" class="form-control" id="pwd"
+                                                        value="">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <form method='post' class="disabled" id='start-docker-btn'>
+                                                        <input class="btn btn-outline-primary" type="submit"
+                                                            value="Start docker"/>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </p>
+                                    <p class="acc-terminal" id="acc-dashboard-docker"></p>
+                                    <br>
+                                    <h5>ROS status
+                                        <i class="far fa-check-circle acc-ok-message acc-status-icon"
+                                            id="ros-status-ok-icon"></i>
+                                        <i class="far fa-times-circle acc-alert-message acc-status-icon"
+                                            id="ros-status-alert-icon"></i>
+                                        <i class="fas fa-question-circle acc-unknown-message acc-status-icon"
+                                            id="ros-status-unknown-icon"></i>
+                                    </h5>
+                                    <!-- p deleted!-->
+                                        <div class="container">
+                                                <div class="row content">
+                                                    <div class="col-sm-9">
+                                                        Run ros master (roscore) on the active docker session
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                            <form method='post' class="disabled" id='start-ros-btn'>
+                                                                    <div class="text-right mb-3">
+                                                                        <input class="btn btn-outline-primary" type='submit'
+                                                                            value='Start ros master' />
+                                                                    </div>
+                                                                </form>
+                                                    </div>
+                                                </div>
+                                        </div>     
+                                    <!-- /p -->
+                                    <p class="acc-terminal" id="acc-dashboard-ros"></p>
+                                    <br>
+                                    <h5>Fleet status
+                                        <i class="far fa-check-circle acc-ok-message acc-status-icon"
+                                            id="fleet-status-ok-icon"></i>
+                                        <i class="far fa-times-circle acc-alert-message acc-status-icon"
+                                            id="fleet-status-alert-icon"></i>
+                                    </h5>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-12 text-center">
+                                                <form method='post' class="disabled" id='fleet-check-btn'>
+                                                    <input class="btn btn-outline-primary" type='submit'
+                                                        value='Fetch connected cars to the network' />
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                        
+                                          <div id="fleet-table">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acc-panel tab-pane container-fluid fade" id="fleet-control-div">
+                <div class="container-fluid">
+                    <div class="row content">
+                        <div class="col-sm-3 sidenav">
+                            <h4>Fleet Control</h4>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="active"><a class="nav-link active" data-toggle="tab"
+                                        href="#fleet-section1">How
+                                        To</a></li>
+                                <li><a class="nav-link" data-toggle="tab" href="#fleet-section2">Verify</a></li>
+                                <li><a class="nav-link" data-toggle="tab" href="#fleet-section3">Start docker</a></li>
+                                <li><a class="nav-link" data-toggle="tab" href="#fleet-section4">Run ROS</a></li>
+                            </ul><br>
+                        </div>
+                        <div class="col-sm-9 acc-main-content">
+                            <div class="tab-content">
+                                <div class="tab-pane container-fluid active" id="fleet-section1">
+                                    How to control fleet
+                                </div>
+                                <div class="tab-pane container-fluid" id="fleet-section2">
+                                    <h4>Verify cars</h4>
+                                    <!-- Button for car availability, ros connection and led blink -->
+                                    <!-- Operation output -->
+                                    <!-- graphical representation of cars -->
+
+                                    <form method='post' id='verify-btn'>
+                                        <input type="hidden" value="video34" />
+                                        <input class="btn btn-outline-primary" type='submit' value='Verify' />
+                                        <div id='message-verify'>Initial text</div>
+                                    </form>
+
+                                </div>
+                                <div class="tab-pane container-fluid" id="fleet-section3">
+                                    <h4>Docker start</h4>
+                                    <!-- Button for starting docker -->
+                                    <!-- Operation output -->
+                                </div>
+                                <div class="tab-pane container-fluid" id="fleet-section4">
+                                    Running ROS master
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acc-panel tab-pane container-fluid fade" id="individual-control-div">
+                <div class="container-fluid">
+                    <div class="row content">
+                        <div class="col-sm-3 sidenav">
+                            <h4>Individual control</h4>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="active"><a class="nav-link active" data-toggle="tab"
+                                        href="#individual-section1">How To</a></li>
+                                <li><a class="nav-link" data-toggle="tab" href="#individual-section2">Remote control</a>
+                                </li>
+                            </ul><br>
+                        </div>
+                        <div class="col-sm-9 acc-main-content">
+                            <div class="tab-content">
+                                <div class="tab-pane container-fluid active" id="individual-section1">
+                                    <h4>How to control single car</h4>
+                                </div>
+                                <div class="tab-pane container-fluid" id="individual-section2">
+                                    <h4>Remote control</h4>
+                                    <div class="container">
+                                        <div class="row content">
+                                            <div class="col-sm-6">
+                                                <h5>Car search</h5>
+                                                <br>
+                                                <form method='post' id='car-search-btn'>
+                                                    <input class="btn btn-outline-primary" type='submit'
+                                                        value='Search' />
+                                                </form>
+                                                <br>
+                                                <!-- List of cars -->
+                                                <form id="car-list" action="">
+                                                    <div>
+                                                        List of car IP addresses:
+                                                    </div>
+                                                </form>
+                                                <br>
+                                                <button onclick="setCar()" class="btn btn-success">Choose</button>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <h5>Control pads</h5>
+                                                <br>
+                                                <p id="car-address"></p>
+                                                <br>
+                                                <ul id="keys">
+                                                    <li class="arrow left-arrow"><img
+                                                            src="{% static "ros_check/images/left-arrow.svg" %}"
+                                                            alt="Left arrow" width="50px" height="50px"></li>
+                                                    <li class="arrow up-arrow"><img
+                                                            src="{% static "ros_check/images/up-arrow.svg" %}"
+                                                            alt="Up arrow" width="50px" height="50px"></li>
+                                                    <li class="arrow down-arrow"><img
+                                                            src="{% static "ros_check/images/down-arrow.svg" %}"
+                                                            alt="Down arrow" width="50px" height="50px"></li>
+                                                    <li class="arrow right-arrow"><img
+                                                            src="{% static "ros_check/images/right-arrow.svg" %}"
+                                                            alt="Right arrow" width="50px" height="50px"></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Connect-to-car button -->
+                                    <!-- Operation output -->
+                                    <!-- Arrow keys for control -->
+                                    <!-- Possibility to choose xbox controller as alternative -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acc-panel tab-pane container fade" id="track-planning-div">
+                Track
+            </div>
+            <div class="acc-panel tab-pane container-fluid fade" id="data-graph-div">
+                <div class="loading style-2" id="data1-loading-div">
+                    <div class="loading-wheel" id="data2-loading-div"></div>
+                </div>
+                <div class="container-fluid">
+                    <div class="row content">
+                        <div class="col-sm-6 data-graph">
+                            <h5>Gyroscope</h5>
+                            <div id="imu-gyro"></div>
+                        </div>
+                        <div class="col-sm-6 data-graph">
+                            <h5>Accelerometer</h5>
+                            <div id="imu-acc"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="acc-panel tab-pane container fade" id="howto-div">
+                How to
+            </div>
+            <div class="acc-panel tab-pane container fade" id="documentation-div">
+                Docs
+            </div>
+            <div class="acc-panel tab-pane container fade" id="credits-div">
+                Credits
+            </div>
+            <div class="acc-panel tab-pane container fade" id="test-div">
+                Test
+                <div id='message'>Initial text</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $(".up-arrow").addClass('key-up');
+            $(".down-arrow").addClass('key-up');
+            $(".left-arrow").addClass('key-up');
+            $(".right-arrow").addClass('key-up');
+        });
+
+
+    </script>
+
+    {% load static %}
+    <script src="{% static "ros_check/js/manual-car.js" %}">
+    </script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "ros_check/css/acc-style.css" %}" media=" screen" />
+
+</body>
+<footer>
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2019 Copyright:
+        <a href="https://www.acc.put.poznan.pl"> ACC project</a>
+    </div>
+    <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+
+</html>

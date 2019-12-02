@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+  <title>ACC Control Panel</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <script type="text/javascript"
+    src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js">
+  </script>
+  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+  <script src="{% static "ros_check/jquery/jquery-3.4.1.js" %}"></script>
+  <script src="{% static "ros_check/js/ros-start.js" %}"></script>  
+  <script src="{% static "ros_check/js/ros-publish.js" %}"></script>
+  <script src="{% static "ros_check/js/ajax.js" %}"></script>
+
+  <link rel="stylesheet" type="text/css" href="{% static "ros_check/css/acc-style.css" %}" media=" screen" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+  <div class="jumbotron text-center" id="acc-header" style="margin-bottom:0">
+    <h1>Autonomous Cars Cooperation Project</h1>
+    <p>Fleet behaviour research lab</p>
+  </div>
+  <!-- add navbar -->
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <a class="navbar-brand" href="#acc-header">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Fleet control</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Individual control</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Track planning</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">How To</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Documentation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Credits</a>
+        </li>
+      </ul>
+      
+    </div>
+  </nav>
+
+  <!-- FLEET CONTROL -->
+  <div class="container" id="acc-panel">
+    <!-- left side panel with buttons -->
+    <!-- header -->
+    <!-- buttons -->
+    
+
+    <form method='post' id='verify-btn'>
+      <input type="hidden" value="video34" />
+      <input type='submit' value='Verify' />
+      <div id='message-verify'>Initial text</div>
+    </form>
+
+    <form method='post' id='docker-btn'>
+      <input type="hidden" value="video34" />
+      <input type='submit' value='Docker Start' />
+      <div id='message-docker'>Initial text</div>
+    </form>
+    <form method='post' id='test'>
+      <input type="hidden" value="video34" />
+      <input type='submit' value='Test button' />
+      <div id='message'>Initial text</div>
+      
+    </form>
+
+    <div class="col-sm-4" id="acc-left-panel">
+         
+
+
+    </div>
+    <!-- right side panel with console output -->
+    <div class="col-sm-8" id="acc-right-panel">
+      <!-- header -->
+      <!-- console output -->
+      <p id="console-output"></p>
+    </div>
+  </div>
+
+  <!-- footer with credits -->
+
+  <script>
+    $(function () {
+      $(".up-arrow").addClass('key-up');
+      $(".down-arrow").addClass('key-up');
+      $(".left-arrow").addClass('key-up');
+      $(".right-arrow").addClass('key-up');
+    })
+  </script>
+
+
+  {% load static %}
+  <script src="{% static "ros_check/js/manual-car.js" %}">
+  </script>
+</body>
+
+</html>
+
+<!--
+  <script type="text/javascript" type="text/javascript">
+    // Connecting to ROS
+    // -----------------
+
+    var ros = new ROSLIB.Ros({
+      url: 'ws://localhost:9090'
+    });
+
+    ros.on('connection', function () {
+      console.log('Connected to websocket server.');
+    });
+
+    ros.on('error', function (error) {
+      console.log('Error connecting to websocket server: ', error);
+    });
+
+    ros.on('close', function () {
+      console.log('Connection to websocket server closed.');
+    });
+
+    // Publishing a Topic
+    // ------------------
+
+    var cmdVel = new ROSLIB.Topic({
+      ros: ros,
+      name: '/cmd_vel',
+      messageType: 'geometry_msgs/Twist'
+    });
+
+    var twist = new ROSLIB.Message({
+      linear: {
+        x: 0.1,
+        y: 0.2,
+        z: 0.3
+      },
+      angular: {
+        x: -0.1,
+        y: -0.2,
+        z: -0.3
+      }
+    });
+    cmdVel.publish(twist);
+
+    // Subscribing to a Topic
+    // ----------------------
+
+    var listener = new ROSLIB.Topic({
+      ros: ros,
+      name: '/listener',
+      messageType: 'std_msgs/String'
+    });
+
+    listener.subscribe(function (message) {
+      console.log('Received message on ' + listener.name + ': ' + message.data);
+      listener.unsubscribe();
+    });
+
+    // Calling a service
+    // -----------------
+
+    var addTwoIntsClient = new ROSLIB.Service({
+      ros: ros,
+      name: '/add_two_ints',
+      serviceType: 'rospy_tutorials/AddTwoInts'
+    });
+
+    var request = new ROSLIB.ServiceRequest({
+      a: 1,
+      b: 2
+    });
+
+    addTwoIntsClient.callService(request, function (result) {
+      console.log('Result for service call on '
+        + addTwoIntsClient.name
+        + ': '
+        + result.sum);
+    });
+
+    // Getting and setting a param value
+    // ---------------------------------
+
+    ros.getParams(function (params) {
+      console.log(params);
+    });
+
+    var maxVelX = new ROSLIB.Param({
+      ros: ros,
+      name: 'max_vel_y'
+    });
+
+    maxVelX.set(0.8);
+    maxVelX.get(function (value) {
+      console.log('MAX VAL: ' + value);
+    });
+  </script>
+-->

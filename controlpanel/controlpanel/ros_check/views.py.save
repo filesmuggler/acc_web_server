@@ -1,0 +1,61 @@
+# Create your views here.
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+import json,requests
+from subprocess import Popen, PIPE, STDOUT
+
+from .models import Car
+
+def index(requesname')[:5]
+    context = {'car_list': car_list}
+    return render(request, 'ros_check/index.html', context)
+
+def create_directory():
+
+        command = ["bash","easyaslinux/scripts/file_manipulater.sh","create" ]
+        try:
+                process = Popen(command, stdout=PIPE, stderr=STDOUT)
+                output = process.stdout.read()
+                exitstatus = process.poll()
+                if (exitstatus==0):
+                        return {"status": "Success", "output":str(output)}
+                else:
+                        return {"status": "Failed", "output":str(output)}
+        except Exception as e:
+                return {"status": "failed", "output":str(e)}
+
+
+def delete_directory():
+
+        command = ["bash","easyaslinux/scripts/file_manipulater.sh","delete" ]
+        try:
+                process = Popen(command, stdout=PIPE, stderr=STDOUT)
+                output = process.stdout.read()
+                exitstatus = process.poll()
+                if (exitstatus==0):
+                        return {"status": "Success", "output":str(output)}
+                else:
+                        return {"status": "Failed", "output":str(output)}
+        except Exception as e:
+                return {"status": "failed", "output":str(e)}
+
+
+
+@csrf_exempt
+def file_maniputer(request):
+
+        if request.method == 'POST':
+                request_data=json.loads(request.body)
+
+                if request_data["action"] == "create":
+                        data = create_directory()
+                elif request_data["action"] == "delete":
+                        data  =delete_directory()
+                else:
+                        data = {"status": "not defined", "output":"not defined"}
+
+                response = HttpResponse(json.dumps(data) , content_type='application/json', status=200)
+                return response

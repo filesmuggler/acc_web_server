@@ -1,0 +1,13 @@
+li{
+    float: left;
+    list-style: none;
+}
+
+html{
+    background-color: black;
+    color:white;
+}
+
+.key-up{
+    opacity: 0.5;
+}
